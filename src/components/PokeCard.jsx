@@ -9,7 +9,7 @@ const PokeCard = ({ p }) => {
          <Link to={`/pokemon/${p.id}`}>
             <figure>
                <img
-                  src={p.sprites?.other['official-artwork'].front_default}
+                  src={p.image}
                   alt={p.name}
                />
             </figure>

@@ -9,7 +9,14 @@ const Home = ({
 }) => {
    return (
       <main>
-         <div className="join flex justify-center items-center my-4">
+         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4'>
+            {filteredPokeData.map((p, i) => (
+               <PokeCard key={i} p={p} />
+            ))}
+         </div>
+
+         {/* Pagination Controls */}
+         {filteredPokeData.length > 30 && <div className="join flex justify-center items-center my-4">
             <button
                className="join-item btn"
                onClick={() => onPageChange(currentPage - 1)}
@@ -27,31 +34,7 @@ const Home = ({
             >
                »
             </button>
-         </div>
-         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4'>
-            {filteredPokeData.map((p, i) => (
-               <PokeCard key={i} p={p} />
-            ))}
-         </div>
-
-         {/* Pagination Controls */}
-         {/* {filteredPokeData.length > 10 && <div className='flex justify-between items-center my-4'>
-            <button
-               onClick={() => getPokemons(prevUrl)}
-               disabled={!prevUrl || loading}
-               className='px-4 py-2 mx-2 bg-blue-500 text-white rounded disabled:bg-gray-400'
-            >
-               Previous
-            </button>
-            <button
-               onClick={() => getPokemons(nextUrl)}
-               disabled={!nextUrl || loading}
-               className='px-4 py-2 mx-2 bg-blue-500 text-white rounded disabled:bg-gray-400'
-            >
-               Next
-            </button>
-         </div>} */}
-
+         </div>}
       </main>
    );
 };

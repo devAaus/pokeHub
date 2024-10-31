@@ -12,7 +12,7 @@ const App = () => {
   const [pokeData, setPokeData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 30;
+  const itemsPerPage = 21;
 
   const handleSearch = (query) => {
     setSearchQuery(query.toLowerCase());
@@ -29,8 +29,12 @@ const App = () => {
         try {
           const pokemonPromises = allPokemons.map(async (item) => {
             const response = await fetch(item.url);
-            const data = await response.json();
-            return data;
+            const data = await response.json()
+            return {
+              id: data.id,
+              image: data.sprites?.other['official-artwork'].front_default,
+              name: data.name
+            };
           });
 
           const pokemonData = await Promise.all(pokemonPromises);
