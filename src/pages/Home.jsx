@@ -1,5 +1,5 @@
 import React from 'react';
-import PokeCard from '../components/pokeCard';
+import PokeCard from '../components/PokeCard';
 
 const Home = ({
    filteredPokeData,
