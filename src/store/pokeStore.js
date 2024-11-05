@@ -29,7 +29,7 @@ const usePokeStore = create(
                }
             },
 
-            getPokemons: async (url = 'https://pokeapi.co/api/v2/pokemon?offset=0&limit=20') => {
+            getPokemons: async (url = 'https://pokeapi.co/api/v2/pokemon?offset=0&limit=21') => {
                set({ loading: true });
                try {
                   const response = await fetch(url);
