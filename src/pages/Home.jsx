@@ -3,9 +3,10 @@ import PokeCard from '../components/PokeCard';
 
 const Home = ({
    filteredPokeData,
-   currentPage,
-   totalPages,
-   onPageChange
+   onPageChange,
+   hasNext,
+   hasPrev,
+   searchQuery
 }) => {
    return (
       <main>
@@ -15,24 +16,22 @@ const Home = ({
             ))}
          </div>
 
-         {/* Pagination Controls */}
-         {filteredPokeData.length > 30 && <div className="join flex justify-center items-center my-4">
+         {/* Floating Pagination Controls */}
+         {!searchQuery && <div className=" fixed -translate-x-2/4 flex gap-2 z-10 shadow-[0_4px_8px_rgba(0,0,0,0.1)] px-4 py-2 rounded-lg left-2/4 bottom-1">
             <button
                className="join-item btn"
-               onClick={() => onPageChange(currentPage - 1)}
-               disabled={currentPage === 1}
+               onClick={onPageChange.prev}
+               disabled={!hasPrev}
             >
-               «
+               « Previous
             </button>
-            <button className="join-item btn">
-               Page {currentPage} of {totalPages}
-            </button>
+            <span className="join-item btn">Page Navigation</span>
             <button
                className="join-item btn"
-               onClick={() => onPageChange(currentPage + 1)}
-               disabled={currentPage === totalPages}
+               onClick={onPageChange.next}
+               disabled={!hasNext}
             >
-               »
+               » Next
             </button>
          </div>}
       </main>

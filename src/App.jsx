@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, useEffect, useState } from 'react';
 import Navbar from './components/Navbar';
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import Loader from './components/Loader';
 import usePokeStore from './store/pokeStore';
 
@@ -8,28 +8,29 @@ const Home = lazy(() => import("./pages/Home"));
 const Pokemon = lazy(() => import("./pages/Pokemon"));
 
 const App = () => {
-  const { allPokemons, getAllPokemons, loading } = usePokeStore();
+  const { allPokemons, pokemons, getPokemons, getAllPokemons, loading, nextUrl, prevUrl } = usePokeStore();
   const [pokeData, setPokeData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 21;
+  const [search, setSearch] = useState('');
 
   const handleSearch = (query) => {
     setSearchQuery(query.toLowerCase());
-    setCurrentPage(1);
   };
 
   useEffect(() => {
     getAllPokemons();
-  }, [getAllPokemons]);
+    getPokemons();
+  }, [getAllPokemons, getPokemons]);
 
   useEffect(() => {
-    if (allPokemons.length > 0) {
+    const sourceData = searchQuery ? allPokemons : pokemons;
+
+    if (sourceData.length > 0) {
       const getPokemonData = async () => {
         try {
-          const pokemonPromises = allPokemons.map(async (item) => {
+          const pokemonPromises = sourceData.map(async (item) => {
             const response = await fetch(item.url);
-            const data = await response.json()
+            const data = await response.json();
             return {
               id: data.id,
               image: data.sprites?.other['official-artwork'].front_default,
@@ -45,49 +46,48 @@ const App = () => {
       };
       getPokemonData();
     }
-  }, [allPokemons]);
+  }, [pokemons, allPokemons, searchQuery]);
+
 
   const filteredPokeData = pokeData.filter(pokemon =>
     pokemon.name.toLowerCase().includes(searchQuery)
   );
 
-  const totalPages = Math.ceil(filteredPokeData.length / itemsPerPage);
+  // Pagination controls using nextUrl and prevUrl
+  const handleNextPage = () => {
+    if (nextUrl) {
+      getPokemons(nextUrl);  // Fetches the next batch of Pokémon
+    }
+  };
 
-  const currentData = filteredPokeData.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  // Handle page change
-  const handlePageChange = (newPage) => {
-    if (newPage > 0 && newPage <= totalPages) {
-      setCurrentPage(newPage);
+  const handlePrevPage = () => {
+    if (prevUrl) {
+      getPokemons(prevUrl);  // Fetches the previous batch of Pokémon
     }
   };
 
   return (
     <div className="max-w-5xl mx-auto md:py-0 px-2">
-      <Router>
-        <Navbar onSearch={handleSearch} />
-        <Suspense fallback={<Loader />}>
-          <Routes>
-            <Route
-              exact
-              path="/"
-              element={
-                <Home
-                  filteredPokeData={currentData}
-                  loading={loading}
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={handlePageChange}
-                />
-              }
-            />
-            <Route path="/pokemon/:id" element={<Pokemon />} />
-          </Routes>
-        </Suspense>
-      </Router>
+      <Navbar onSearch={handleSearch} search={search} setSearch={setSearch} />
+      <Suspense fallback={<Loader />}>
+        <Routes>
+          <Route
+            exact
+            path="/"
+            element={
+              <Home
+                filteredPokeData={filteredPokeData.length > 0 ? filteredPokeData : pokeData}
+                loading={loading}
+                onPageChange={{ next: handleNextPage, prev: handlePrevPage }}
+                hasNext={!!nextUrl}
+                hasPrev={!!prevUrl}
+                searchQuery={searchQuery}
+              />
+            }
+          />
+          <Route path="/pokemon/:id" element={<Pokemon />} />
+        </Routes>
+      </Suspense>
     </div>
   );
 }

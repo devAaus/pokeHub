@@ -1,18 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import logo from '../assets/logo.png';
 import { useLocation } from 'react-router-dom';
 
-const Navbar = ({ onSearch }) => {
-   const [search, setSearch] = useState('');
+const Navbar = ({ onSearch, search, setSearch }) => {
    const location = useLocation();
 
-   const handleSearch = (e) => {
-      const value = e.target.value;
-      setSearch(value);
-
-      // Call onSearch while typing
-      if (onSearch) {
-         onSearch(value);
+   const handleSearchKeyPress = (e) => {
+      if (e.key === 'Enter' && onSearch) {
+         onSearch(search);
       }
    };
 
@@ -25,11 +20,12 @@ const Navbar = ({ onSearch }) => {
          </div>
          {location.pathname === '/' && (
             <div className="flex-none gap-2">
-               <div className="form-control">
+               <div className="form-control flex">
                   <input
                      type="text"
                      value={search}
-                     onChange={handleSearch}
+                     onChange={(e) => setSearch(e.target.value)}
+                     onKeyDown={handleSearchKeyPress}
                      placeholder="Search"
                      className="input input-bordered input-primary w-full max-w-xs"
                   />
